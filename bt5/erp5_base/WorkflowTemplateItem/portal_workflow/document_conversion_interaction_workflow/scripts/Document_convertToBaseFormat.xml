@@ -50,7 +50,11 @@
         </item>
         <item>
             <key> <string>_body</string> </key>
-            <value> <string>document = state_change[\'object\']\n
+            <value> <string>"""\n
+  This script is used during ingestion of a file.\n
+  It requires proxy roles so an Anonymous User can contribute a document.\n
+"""\n
+document = state_change[\'object\']\n
 \n
 # calculate new conversion to base_format\n
 document.processFile()\n

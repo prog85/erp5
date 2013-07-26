@@ -58,6 +58,7 @@ method.\n
 To use, write your own method (probably External Method, since it is most likely\n
 to use re) that would analyze text content of the doc\n
 and return a dictionary of properties.\n
+It requires proxy roles so an Anonymous User can contribute a document.\n
 """\n
 information = context.getContentInformation()\n
 \n
