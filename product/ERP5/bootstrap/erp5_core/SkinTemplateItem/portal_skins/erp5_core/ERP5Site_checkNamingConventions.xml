@@ -197,9 +197,39 @@ def checkTitle(path, id, title, field=None, form=None):\n
   return error_message\n
 \n
 \n
+FORM_ID_MESSAGE = "Form id \\"%s\\"(portal_type:%s) is not valid. The part \\"%s\\" should be in %s.\\n"\n
+object_view_uid = context.portal_categories.action_type.object_view.getUid()\n
+                                               \n
+def checkFormId(portal_type, message_list):\n
+  """\n
+    Check Form Id has valid naming.\n
+\n
+    The Convention:\n
+\n
+    ERP5 Forms are stored as IDs in the OFS and they are associated to one or\n
+    more portal types or classes as actions. They must always start with view\n
+    after the name of a portal type or a class.\n
+  """\n
+  action_list = portal_type.searchFolder(portal_type=\'Action Information\',\n
+                                         action_type_uid=object_view_uid)\n
+  base_class_name_list = context.PortalTypeUtils_getAllBaseClassNameList(portal_type)\n
+  base_class_name_set = set(base_class_name_list)\n
+  name_list = \',\'.join(base_class_name_set)\n
+  for action in action_list:\n
+    action_text = action.getObject().getActionText()\n
+    if action_text.startswith(\'python\'):\n
+      continue\n
+    elif action_text.endswith(\'}\'):\n
+      continue\n
+    else:\n
+      form_id = action_text.split(\'/\')[-1]\n
+      form_base_title = form_id.split(\'_\')[0]\n
+      portal_type_id = portal_type.id\n
+      if form_base_title not in base_class_name_set:\n
+        message_list.append(\n
+          FORM_ID_MESSAGE % (form_id, portal_type_id, form_base_title, name_list))\n
 \n
 message_list = []\n
-\n
 \n
 # Test portal_skins content\n
 for folder in context.portal_skins.objectValues(spec=(\'Folder\',)):\n
@@ -251,6 +281,8 @@ IGNORE_PORTAL_TYPE_SET = set(("Application Id Generator",\n
   "OOo Document", "Ram Cache", "SQL Non Continuous Increasing Id Generator",\n
   "Url Registry Tool", "ZODB Continuous Increasing Id Generator"))\n
 for ptype in context.portal_types.objectValues():\n
+  # Check all Form IDs that are specified at object_view actions\n
+  checkFormId(ptype, message_list)\n
   pt_id = ptype.id\n
   if pt_id in IGNORE_PORTAL_TYPE_SET:\n
     continue\n
