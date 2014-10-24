@@ -189,7 +189,9 @@ class FunctionalTestRunner:
         (displayname, protocolname, hexkey) = auth.split()
         Popen(['xauth', 'add', 'localhost/unix:%s' %xvfb_display, protocolname, hexkey])
     print 'Xvfb : %d' % pid
-    print 'Take screenshots using xwud -in %s/Xvfb_screen0' % self.xvfb_fbdir
+    print 'Take single screenshots using xwud -in %s/Xvfb_screen0' % self.xvfb_fbdir
+    print "Take multiple screenshots using ffmpeg -f x11grab -s 1152x647 -r 25 -i :123+0,363 -f image2 'screenshots/img-%03d.png'"
+    print "Continually remove double screenshots in second console using while :; do fdupes -N -d screenshots/;sleep 1; done"
     return pid
 
   def getPrefJs(self, host, port):

@@ -106,7 +106,9 @@ class Xvfb:
       raise EnvironmentError("All displays locked : %r" % (self.display_list,))
 
     print 'Xvfb : %d' % self.process.pid
-    print 'Take screenshots using xwud -in %s/Xvfb_screen0' % self.fbdir
+    print 'Take single screenshots using xwud -in %s/Xvfb_screen0' % self.xvfb_fbdir
+    print "Take multiple screenshots using ffmpeg -f x11grab -s 1152x647 -r 25 -i :123+0,363 -f image2 'screenshots/img-%03d.png'"
+    print "Continually remove double screenshots in second console using while :; do fdupes -N -d screenshots/;sleep 1; done"
 
   def quit(self):
     if hasattr(self, 'process'):
