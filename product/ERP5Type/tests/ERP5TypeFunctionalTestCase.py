@@ -78,7 +78,7 @@ class Xvfb:
     with open(os.devnull, 'w') as null:
       self.process = subprocess.Popen(
         (xvfb_bin, '-fbdir' , self.fbdir, display,
-        '-screen', '0', '1280x1024x24'),
+        '-screen', '0', '1280x1384x24'),
         stdout=null, stderr=null, close_fds=True)
       # try to check if X screen is available
       time.sleep(5)
