@@ -904,6 +904,56 @@ class TestResource(ERP5TypeTestCase):
   # The following test tests Movement.getPrice, which is based on the movement
   # context.
 
+  def testGetPriceSetPrice(self):
+    resource = self.portal.getDefaultModule(self.product_portal_type)\
+                .newContent(portal_type=self.product_portal_type)
+    supply_line = resource.newContent(
+                    portal_type=self.sale_supply_line_portal_type)
+    supply_line.setBasePrice(1000)
+    self.tic()
+    sale_order = self.portal.getDefaultModule("Sale Order").newContent(
+                              portal_type='Sale Order',)
+    sale_order_line = sale_order.newContent(
+                          portal_type=self.sale_order_line_portal_type,
+                          resource_value=resource,
+                          quantity=5)
+    self.assertEqual(1000, sale_order_line.getPrice())
+    # price has been looked up and copied
+    self.assertTrue(sale_order_line.hasPrice())
+
+    # if we force price, then our forced price is used
+    sale_order_line.setPrice(123)
+    self.assertEqual(123, sale_order_line.getPrice())
+
+    # if we reset price,
+    sale_order_line.setPrice(None)
+    # it is looked up again
+    self.assertEqual(1000, sale_order_line.getPrice())
+    self.assertTrue(sale_order_line.hasPrice())
+
+  def testGetPriceMovementOnly(self):
+    resource = self.portal.getDefaultModule(self.product_portal_type)\
+                .newContent(portal_type=self.product_portal_type)
+    supply_line = resource.newContent(
+                    portal_type=self.sale_supply_line_portal_type)
+    supply_line.setBasePrice(1000)
+    self.tic()
+    sale_order = self.portal.getDefaultModule("Sale Order").newContent(
+                              portal_type='Sale Order',)
+    sale_order_line = sale_order.newContent(
+                          portal_type=self.sale_order_line_portal_type,
+                          resource_value=resource,
+                          quantity=5)
+    sub_sale_order_line = sale_order_line.newContent(
+                          portal_type=self.sale_order_line_portal_type,
+                          quantity=2)
+    # when we have hierarchical order lines, only leaves are movements.
+    self.assertTrue(sub_sale_order_line.isMovement())
+    self.assertFalse(sale_order_line.isMovement())
+    # Only movements get a price automatically.:
+    self.assertEqual(1000, sub_sale_order_line.getPrice())
+    self.assertEqual(None, sale_order_line.getPrice())
+
   def test_12_getInternalVsPurchaseVsSalePrice(self, quiet=quiet, run=run_all_test):
     """
     Test the pricing model with internal, purchase and sale supply
