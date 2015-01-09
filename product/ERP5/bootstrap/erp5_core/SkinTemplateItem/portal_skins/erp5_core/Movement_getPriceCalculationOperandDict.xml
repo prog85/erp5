@@ -50,7 +50,11 @@
         </item>
         <item>
             <key> <string>_body</string> </key>
-            <value> <string>def getResourceInternalPriceSortKeyMethod(high_priority_supply_line_list):\n
+            <value> <string># We only lookup and set a price on movements\n
+if not context.isMovement():\n
+  return default\n
+\n
+def getResourceInternalPriceSortKeyMethod(high_priority_supply_line_list):\n
   def resourceInternalPriceSortKeyMethod(a):\n
     high_priority_supply_line_list_len = len(high_priority_supply_line_list)\n
     if a in high_priority_supply_line_list:\n
