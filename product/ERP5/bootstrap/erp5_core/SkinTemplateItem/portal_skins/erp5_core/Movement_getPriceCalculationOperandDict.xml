@@ -51,7 +51,16 @@
         <item>
             <key> <string>_body</string> </key>
             <value> <string># We only lookup and set a price on movements\n
-if not context.isMovement():\n
+if not context.isMovement() and context.getPortalType() not in (\n
+    # XXX for compatibility, we ignore banking portal types\n
+      \'Cash Inventory Line\',\n
+      \'Vault Transfer Line\',\n
+      \'Outgoing Classification Survey Line\',\n
+      \'Outgoing Cash Sorting Line\',\n
+      \'Outgoing Cash Exchange Line\',\n
+      \'Incoming Cash Balance Regulation Line\',\n
+      \'Outgoing Cash Balance Regulation Line\',\n
+    ):\n
   return default\n
 \n
 def getResourceInternalPriceSortKeyMethod(high_priority_supply_line_list):\n
