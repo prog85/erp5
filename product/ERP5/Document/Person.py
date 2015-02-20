@@ -110,9 +110,9 @@ class Person(Node, LoginAccountProviderMixin, EncryptedPasswordMixin):
         first name, middle name and last name
       """
       if not self.title:
-        return ' '.join([x for x in (self.getTranslatedFirstName(),
-                                     self.getTranslatedMiddleName(),
-                                     self.getTranslatedLastName()) if x])
+        return ' '.join([x for x in (self.getTranslatedFirstName(**kw),
+                                     self.getTranslatedMiddleName(**kw),
+                                     self.getTranslatedLastName(**kw)) if x])
       else:
         return self.title
 
